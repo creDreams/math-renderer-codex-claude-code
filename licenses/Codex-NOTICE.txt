@@ -1,0 +1,14 @@
+OpenAI Codex
+Copyright 2025 OpenAI
+
+This project includes code derived from [Ratatui](https://github.com/ratatui/ratatui), licensed under the MIT license.
+Copyright (c) 2016-2022 Florian Dehau
+Copyright (c) 2023-2025 The Ratatui Developers
+
+Agent Math adapts bounded Unicode parsing, symbol and structured layout conventions
+from codex-rs/tui/src/markdown_render/math/render.rs and render/structured.rs
+at OpenAI Codex commit 616cab3a3529f572c3385098c12698278770ea98 (Apache-2.0).
+The modified TypeScript implementations are packages/adapter-codex/src/native-display.ts
+and packages/adapter-codex/src/native-symbols.ts.
+It predicts a limited subset for source verification; it is not the Codex renderer.
+The Apache-2.0 license is supplied alongside this notice in Apache-2.0.txt.

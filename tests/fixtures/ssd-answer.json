@@ -1,0 +1,10 @@
+{
+  "heading": "SSD reading fixture: compare several approaches and examine their mathematical objectives.",
+  "paragraph": "Earlier discussion of sampling and semantic candidates.",
+  "tableSource": "| Metric | Meaning |\n|---|---|\n| Return | Expected outcome |\n\n",
+  "tableDisplay": "Metric       Meaning\n━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━\nReturn       Expected outcome\n──────────  ──────────────────\n\n",
+  "listSource": "These questions compare the consequences of different candidate selections.\n\n- Does this choice change the final success rate?\n- Do the candidates lead to different valid programs?\n\n",
+  "listDisplay": "These questions compare the consequences of different candidate selections.\n\n• Does this choice change the final success rate?\n• Do the candidates lead to different valid programs?\n\n",
+  "excerpt": "一个实现途径是将已有分布作为先验，构造价值加权目标：\n\n\\[\nq^\\*(a\\mid s)\n\\propto\nq_{\\mathrm{prior}}(a\\mid s)\n\\exp\\left(\\frac{\\widehat Q(s,a)}{\\eta}\\right).\n\\]\n\n它对应一个局部优化问题：\n\n\\[\n\\max_q\n\\left\\{\n\\mathbb E_{a\\sim q}[\\widehat Q(s,a)]\n-\n\\eta\\,\\mathrm{KL}(q\\|q_{\\mathrm{prior}})\n\\right\\}.\n\\]",
+  "ending": "The remainder of this long answer discusses execution budgets and experimental controls."
+}

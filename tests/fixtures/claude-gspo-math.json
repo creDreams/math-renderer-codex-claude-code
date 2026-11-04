@@ -1,0 +1,11 @@
+{
+  "intro": "A sequence policy optimization derivation for regression.",
+  "blocks": [
+    {"name":"group advantage","expressions":1,"raw":"Â_i = ( r(x, y_i) − mean({r(x, y_j)}_{j=1..G}) ) / std({r(x, y_j)}_{j=1..G})"},
+    {"name":"sequence ratio","expressions":1,"raw":"s_i(θ) = ( π_θ(y_i|x) / π_old(y_i|x) )^(1/|y_i|)\n\n       = exp( (1/|y_i|) · Σ_{t=1}^{|y_i|} log( π_θ(y_{i,t} | x, y_{i,<t}) / π_old(y_{i,t} | x, y_{i,<t}) ) )"},
+    {"name":"sequence objective","expressions":1,"raw":"J_GSPO(θ) = E_{x~D, {y_i}~π_old} [ (1/G) Σ_{i=1}^{G} min( s_i(θ) · Â_i,\n                                                        clip(s_i(θ), 1−ε, 1+ε) · Â_i ) ]"},
+    {"name":"sequence gradient","expressions":1,"raw":"∇_θ J_GSPO = E[ (1/G) Σ_i s_i(θ) · Â_i · (1/|y_i|) Σ_t ∇_θ log π_θ(y_{i,t} | x, y_{i,<t}) ]"},
+    {"name":"token gradient and weight","expressions":2,"raw":"∇_θ J_GRPO = E[ (1/G) Σ_i Â_i · (1/|y_i|) Σ_t w_{i,t}(θ) · ∇_θ log π_θ(y_{i,t} | x, y_{i,<t}) ]\n\nw_{i,t}(θ) = π_θ(y_{i,t} | ·) / π_old(y_{i,t} | ·)"},
+    {"name":"custom stop gradient and token objective","expressions":2,"raw":"s_{i,t}(θ) = sg[ s_i(θ) ] · π_θ(y_{i,t} | x, y_{i,<t}) / sg[ π_θ(y_{i,t} | x, y_{i,<t}) ]\n\nJ_GSPO-token(θ) = E[ (1/G) Σ_i (1/|y_i|) Σ_t min( s_{i,t}(θ) · Â_{i,t},\n                                                  clip(s_{i,t}(θ), 1−ε, 1+ε) · Â_{i,t} ) ]"}
+  ]
+}

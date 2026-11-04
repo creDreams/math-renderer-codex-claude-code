@@ -1,0 +1,125 @@
+{
+  "date": "2026-11-02",
+  "status": "research_only_before_community_host_plan_review",
+  "environment": {
+    "os": "Windows",
+    "terminal": "Windows Terminal 1.24.12741.0",
+    "terminal_source_tag": "v1.24.12741.0",
+    "terminal_source_sha": "7ff11ee107c984e236960ec948b450ccbc10187b",
+    "probe_runtime": "Windows PowerShell 5.1 / .NET Framework / UI Automation / WinForms",
+    "codex_display_version": "0.166.0"
+  },
+  "mechanism": {
+    "read": "UI Automation TextPattern on TermControl",
+    "coordinates": "GetVisibleRanges + FindText + GetBoundingRectangles",
+    "draw": "separate owned layered NOACTIVATE/TRANSPARENT window",
+    "poll_interval_ms": 100,
+    "terminal_stream_writes": false,
+    "pty_proxy": false,
+    "process_injection": false,
+    "keyboard_hooks": false
+  },
+  "checks": [
+    {
+      "name": "visible-text-and-physical-formula-rectangles",
+      "status": "passed",
+      "scope": "synthetic fixture and resumed real Codex"
+    },
+    {
+      "name": "assistant-provenance",
+      "status": "passed",
+      "scope": "one uniquely matching session from 160 bounded local session candidates"
+    },
+    {
+      "name": "native-overlay-rendering",
+      "status": "passed",
+      "scope": "one pre-captured formula; not yet a continuous automatic renderer"
+    },
+    {
+      "name": "visible-and-document-text-unchanged",
+      "status": "passed",
+      "scope": "UIA comparisons before/after overlay, not a full internal cell/cursor comparison"
+    },
+    {
+      "name": "foreground-preserved-and-native-hit-test-passes-through",
+      "status": "passed",
+      "scope": "GetForegroundWindow + WindowFromPoint/GetAncestor return terminal HWND"
+    },
+    {
+      "name": "typing-and-left-right-arrows",
+      "status": "passed",
+      "scope": "real Codex input; 13 temporary characters removed, no Enter or model request"
+    },
+    {
+      "name": "ctrl-c-exit",
+      "status": "passed",
+      "scope": "empty prompt exit in disposable resumed Codex; not active tool cancellation"
+    },
+    {
+      "name": "selection-hides-overlay",
+      "status": "passed",
+      "scope": "programmatic UIA selection in synthetic fixture"
+    },
+    {
+      "name": "mouse-drag-selection",
+      "status": "inconclusive",
+      "scope": "automated drag returned empty selection both with overlay and without; requires improved harness/manual check"
+    },
+    {
+      "name": "scroll-out-and-back",
+      "status": "passed",
+      "scope": "real Codex history viewport moved by UIA ScrollIntoView; overlay hides/restores"
+    },
+    {
+      "name": "move-resize-minimize-restore",
+      "status": "passed",
+      "scope": "synthetic fixture; single monitor/DPI only"
+    },
+    {
+      "name": "alternate-buffer",
+      "status": "passed",
+      "scope": "synthetic fixture; formula remains visible"
+    },
+    {
+      "name": "approval-redraw-invalidation",
+      "status": "passed",
+      "scope": "synthetic approval prompt only; no live tool/approval run"
+    },
+    {
+      "name": "complex-ui-multi-pane-multi-window-multi-dpi",
+      "status": "not_tested"
+    },
+    {
+      "name": "standalone-community-installation",
+      "status": "not_implemented"
+    }
+  ],
+  "limitations": [
+    "Probe captures/renders one formula before the sidecar starts; full automatic recognition/rendering lifecycle remains to be built.",
+    "Research renderer uses installed Node.js and headless Chrome; packaging them or an alternative offline engine is not verified.",
+    "100 ms polling leaves a stale-frame interval; immediate invalidation and timeout behavior remain engineering gates.",
+    "One transient COMException occurred during synthetic UI changes; probe hid and then recovered.",
+    "Opaque theme only; UIA did not provide a numeric font size in this version.",
+    "Terminal focus/menus/tab changes and overlapping windows need explicit invalidation rules.",
+    "Mouse drag integration remains inconclusive; native hit-testing alone is insufficient proof.",
+    "No new model response was requested; streaming and live approvals require later verification."
+  ],
+  "benchmarks": {
+    "synthetic": {
+      "frames": 1694,
+      "samples": 1000,
+      "p50_ms": 2.084,
+      "p95_ms": 3.775,
+      "max_ms": 34.068,
+      "scope": "first 1000 UIA read/window update samples; excludes scheduling interval, initial discovery and math rendering"
+    },
+    "real_codex": {
+      "frames": 1657,
+      "samples": 1000,
+      "p50_ms": 2.21,
+      "p95_ms": 3.839,
+      "max_ms": 14.755,
+      "scope": "first 1000 UIA read/window update samples; excludes scheduling interval, initial discovery and math rendering"
+    }
+  }
+}

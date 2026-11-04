@@ -1,0 +1,8 @@
+{
+  "name": "agent-math-windows",
+  "version": "0.2.0-preview.30",
+  "private": true,
+  "type": "module",
+  "description": "Native presentation companion for Windows Terminal",
+  "license": "MIT"
+}

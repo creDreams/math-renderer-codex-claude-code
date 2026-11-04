@@ -1,0 +1,99 @@
+{
+  "date": "2026-11-02",
+  "status": "research_only_waiting_for_plan_review",
+  "proposed_project_root": "./terminal-math-renderer",
+  "formal_project_created": false,
+  "environment": {
+    "node": "24.19.0",
+    "git": "2.55.0.windows.3",
+    "codex": "0.166.0",
+    "windows_terminal": "1.24.12741.0"
+  },
+  "recommended_host": {
+    "name": "Tabby",
+    "release": "v1.0.238",
+    "actual_host_plugin_tested": false,
+    "stable_source_xterm_range": "^5",
+    "internal_frontend_api_stability_guaranteed": false
+  },
+  "render_probes": [
+    {
+      "xtermVersion": "6.0.0",
+      "browser": "156.0.8078.74",
+      "checks": [
+        "initial-original-output",
+        "SVG-decoration-keeps-buffer-and-cursor",
+        "selection-retains-original-LaTeX",
+        "keyboard-arrows-and-Ctrl-C-unaffected",
+        "resize-keeps-baseline-state",
+        "alternate-screen-overlay-keeps-buffer",
+        "redraw-invalidates-overlay",
+        "normal-scrollback-keeps-baseline-state"
+      ],
+      "originalBufferUnchanged": true,
+      "decorationRendered": true,
+      "formulaRows": 8,
+      "altMarkerAvailable": true,
+      "altDecorationAvailable": true,
+      "altDecorationVisible": false,
+      "alternateOverlayVerified": true,
+      "pageErrors": [],
+      "limitations": [
+        "Known formula coordinates; automatic Codex message-to-cell mapping not implemented",
+        "No live Codex session or Electron packaging tested",
+        "Host overlay uses .xterm-screen DOM geometry; adapter must pin and verify this dependency"
+      ]
+    },
+    {
+      "xtermVersion": "5.5.0",
+      "browser": "156.0.8078.74",
+      "checks": [
+        "initial-original-output",
+        "SVG-decoration-keeps-buffer-and-cursor",
+        "selection-retains-original-LaTeX",
+        "keyboard-arrows-and-Ctrl-C-unaffected",
+        "resize-keeps-baseline-state",
+        "alternate-screen-overlay-keeps-buffer",
+        "redraw-invalidates-overlay",
+        "normal-scrollback-keeps-baseline-state"
+      ],
+      "originalBufferUnchanged": true,
+      "decorationRendered": true,
+      "formulaRows": 8,
+      "altMarkerAvailable": true,
+      "altDecorationAvailable": true,
+      "altDecorationVisible": false,
+      "alternateOverlayVerified": true,
+      "pageErrors": [],
+      "limitations": [
+        "Known formula coordinates; automatic Codex message-to-cell mapping not implemented",
+        "No live Codex session or Electron packaging tested",
+        "Host overlay uses .xterm-screen DOM geometry; adapter must pin and verify this dependency"
+      ]
+    }
+  ],
+  "conpty_probe": {
+    "nodePtyVersion": "1.1.0",
+    "node": "v24.19.0",
+    "conpty": "node-pty bundled ConPTY DLL",
+    "checks": [
+      "starts unmodified child process under a real PTY",
+      "Unicode, arrow sequence, Ctrl+C and Enter reach raw child input",
+      "window size reaches child as 100x30",
+      "clean child exit propagated"
+    ],
+    "exitCode": 0,
+    "limitations": [
+      "A controlled child process was used; full interactive Codex remains to be validated after plan approval",
+      "Both system and bundled ConPTY passed I/O checks but left a host process alive after child exit; native lifecycle cleanup remains a required engineering gate"
+    ],
+    "hostExitCleanupVerified": false
+  },
+  "scratch_directory": "%TEMP%/agent-math-research",
+  "not_yet_verified": [
+    "actual Tabby plugin loading/unloading",
+    "automatic formula-to-screen mapping in live Codex",
+    "formula anchoring during continuous scroll/reflow",
+    "real host process cleanup and full interaction compatibility"
+  ]
+}

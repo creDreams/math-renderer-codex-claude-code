@@ -1,0 +1,10 @@
+{
+  "name": "tabby-agent-math",
+  "version": "0.1.0-preview.1",
+  "description": "Presentation-only display math for Codex in Tabby",
+  "author": "Agent Math Terminal contributors",
+  "license": "MIT",
+  "keywords": ["tabby-plugin"],
+  "main": "dist/index.cjs",
+  "files": ["dist", "README.md", "LICENSE", "THIRD_PARTY_NOTICES.md"]
+}

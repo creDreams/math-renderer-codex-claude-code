@@ -1,0 +1,14 @@
+{
+  "source": "这是独立桌面回放：检查字符求和、平均回报和边框中残留的脚本。\n\n每个步骤的折扣回报为：\n\n\\[\nG_{i,t}=\\sum_{k=t}^{T}\\gamma^{k-t}r_{i,k}.\n\\]\n\n同一状态组的平均回报为：\n\n\\[\n\\bar G(s)=\\frac{1}{|\\mathcal G(s)|}\\sum_{(j,u)\\in\\mathcal G(s)}G_{j,u}.\n\\]\n\n两种优势的组合为：\n\n\\[\n\\boxed{\\hat A_{i,t}=A_i^{E}+\\omega A_{i,t}^{S}}\n\\]\n\n已易读的公式：\n\\[\nx^2+y^2=r^2\n\\]\n\n还有一个保留源码的块：\n\n\\[\n\\mathbb E_q[Q]-\\eta\\mathrm{KL}(q\\|p).\n\\]\n\n以上结束。",
+  "displayed": "这是独立桌面回放：检查字符求和、平均回报和边框中残留的脚本。\n\n每个步骤的折扣回报为：\n\n          T\nG_{i,t}= ∑ γᵏ⁻ᵗr_{i,k}.\n         k=t\n\n同一状态组的平均回报为：\n\n        1\nḠ(s)=──────     ∑     G_{j,u}.\n      |𝒢(s)| (j,u)∈𝒢(s)\n\n两种优势的组合为：\n\n┌──────────────────────────────┐\n│ Â_{i,t}=Aᵢ^{E}+ω A_{i,t}^{S} │\n└──────────────────────────────┘\n\n已易读的公式：\nx²+y²=r²\n\n还有一个保留源码的块：\n\n\\[\n\\mathbb E_q[Q]-\\eta\\mathrm{KL}(q\\|p).\n\\]\n\n以上结束。",
+  "literalBlocks": [
+    "          T\nG_{i,t}= ∑ γᵏ⁻ᵗr_{i,k}.\n         k=t",
+    "        1\nḠ(s)=──────     ∑     G_{j,u}.\n      |𝒢(s)| (j,u)∈𝒢(s)",
+    "┌──────────────────────────────┐\n│ Â_{i,t}=Aᵢ^{E}+ω A_{i,t}^{S} │\n└──────────────────────────────┘",
+    "\\[\n\\mathbb E_q[Q]-\\eta\\mathrm{KL}(q\\|p).\n\\]"
+  ],
+  "anchor": "每个步骤的折扣回报为：",
+  "reportName": "windows-history-native-scripts",
+  "width": 1750,
+  "height": 1100
+}

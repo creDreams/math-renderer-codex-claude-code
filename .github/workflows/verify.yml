@@ -1,0 +1,28 @@
+name: Verify
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    env:
+      AMT_PERF_BUDGET_MS: '50'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run verify
+      - run: npm run pack:plugin
+      - run: npm run pack:windows
+      - run: npm run test:windows-core
+      - run: npm run test:windows-lazy
+      - run: npm run test:windows-package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: agent-math-windows-preview
+          path: dist/releases/

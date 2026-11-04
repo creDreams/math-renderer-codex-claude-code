@@ -1,0 +1,14 @@
+{
+  "intro": "A complete preference optimization derivation.",
+  "blocks": [
+    {"name":"regularized objective","raw":"max_π E_{x~D, y~π(·|x)}[r(x,y)] - β D_KL(π(·|x)||π_ref(·|x))"},
+    {"name":"optimal policy and normalization","raw":"π*(y|x) = (1/Z(x)) · π_ref(y|x) · exp(r(x,y)/β)\n\nZ(x) = Σ_y π_ref(y|x) · exp(r(x,y)/β)"},
+    {"name":"implicit reward","raw":"r(x,y) = β log(π*(y|x)/π_ref(y|x)) + β log Z(x)"},
+    {"name":"preference probability","raw":"P(y_w ≻ y_l | x) = σ(r(x,y_w) - r(x,y_l))"},
+    {"name":"substituted preference","raw":"P(y_w ≻ y_l | x) = σ(β log(π*(y_w|x)/π_ref(y_w|x)) - β log(π*(y_l|x)/π_ref(y_l|x)))"},
+    {"name":"fixed reference loss","raw":"L_DPO(π_θ; π_ref) = - E_{(x,y_w,y_l)~D}[log σ(β log(π_θ(y_w|x)/π_ref(y_w|x))\n                      - β log(π_θ(y_l|x)/π_ref(y_l|x)))]"},
+    {"name":"reward parameterization","raw":"r̂_θ(x,y) = β log(π_θ(y|x)/π_ref(y|x))"},
+    {"name":"equivalent objective","raw":"L_DPO = - E[log σ(r̂_θ(x,y_w)-r̂_θ(x,y_l))]"},
+    {"name":"loss gradient","raw":"∇_θ L_DPO = - β E[σ(r̂_θ(x,y_l)-r̂_θ(x,y_w))\n                 · (∇_θ log π_θ(y_w|x)-∇_θ log π_θ(y_l|x))]"}
+  ]
+}

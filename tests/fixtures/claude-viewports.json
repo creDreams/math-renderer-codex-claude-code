@@ -1,0 +1,18 @@
+[
+  {"name":"pinned history", "rows":["❯ Explain math.","  x_t^2+y_t^2=r^2","  Jump to bottom (ctrl+End) ↓","────────────────","❯ ","────────────────","  ⏵⏵ bypass permissions on (shift+tab to cycle)"],"startRow":1,"endRow":1},
+  {"name":"unpinned history", "rows":["  x_t^2+y_t^2=r^2","  Jump to bottom (ctrl+End) ↓","────────────────","❯ ","────────────────","  ⏵⏵ bypass permissions on (shift+tab to cycle)"],"startRow":0,"endRow":0},
+  {"name":"unpinned bottom with completion", "rows":["  Partial prose.","  x_t^2+y_t^2=r^2","","✻ Churned for 35s · done 17:54","","────────────────","❯","────────────────","  ⏵⏵ bypass permissions on (shift+tab to cycle)"],"startRow":0,"endRow":4},
+  {"name":"bottom without completion", "rows":["  x_t^2+y_t^2=r^2","────────────────","❯","────────────────","  ? for shortcuts"],"startRow":0,"endRow":0},
+  {"name":"pinned bottom", "rows":["❯ Explain math.","  x_t^2+y_t^2=r^2","────────────────","❯","────────────────","  accept edits on (shift+tab to cycle)"],"startRow":1,"endRow":1},
+  {"name":"plan mode and multiline input", "rows":["  x_t^2+y_t^2=r^2","────────────────","❯ A new question:","  x_t^2+y_t^2=z^2","────────────────","  plan mode on (shift+tab to cycle)"],"startRow":0,"endRow":0},
+  {"name":"assistant marker at bottom", "rows":["● A mathematical answer.","  x_t^2+y_t^2=r^2","────────────────","❯","────────────────","  ? for shortcuts"],"startRow":0,"endRow":1},
+  {"name":"table and overlaid jump hint", "rows":["  x_t^2+y_t^2=r^2","  ┌───────┬─────┐","  │x│y│                         Jump to bottom (ctrl+End) ↓","","────────────────","❯","────────────────","  ? for shortcuts"],"startRow":0,"endRow":1},
+  {"name":"quoted hint is ordinary body text", "rows":["  Jump to bottom (ctrl+End) ↓","  x_t^2+y_t^2=r^2","────────────────","❯","────────────────","  ? for shortcuts"],"startRow":0,"endRow":1},
+  {"name":"jump hint with blank spacing", "rows":["  x_t^2+y_t^2=r^2","  Jump to bottom (ctrl+End) ↓","","","────────────────","❯","────────────────","  normal mode"],"startRow":0,"endRow":0},
+  {"name":"padded UIA rows", "rows":["  x_t^2+y_t^2=r^2                ","────────────────      ","❯                    ","────────────────       ","  ? for shortcuts         ","                      "],"startRow":0,"endRow":0},
+  {"name":"tool content above real input", "rows":["● Bash(echo math)","  ⎿ x_t^2+y_t^2=r^2","────────────────","❯","────────────────","  ? for shortcuts"],"startRow":0,"endRow":1},
+  {"name":"unknown application", "rows":["  x_t^2+y_t^2=r^2","────────────────","❯","────────────────","  ordinary status"],"startRow":-1,"endRow":-1},
+  {"name":"missing closing rule", "rows":["  x_t^2+y_t^2=r^2","────────────────","❯","  ? for shortcuts"],"startRow":-1,"endRow":-1},
+  {"name":"missing input prompt", "rows":["  x_t^2+y_t^2=r^2","────────────────","plain prose","────────────────","  ? for shortcuts"],"startRow":-1,"endRow":-1},
+  {"name":"only input has formula", "rows":["────────────────","❯ x_t^2+y_t^2=r^2","────────────────","  ? for shortcuts"],"startRow":-1,"endRow":-1}
+]
