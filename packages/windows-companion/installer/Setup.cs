@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -13,10 +14,24 @@ namespace AgentMathSetup {
     internal static class Setup {
         private const string Version = "0.2.0-preview.30";
         private const string RegistryPath = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\AgentMath";
-        private static readonly string DefaultTarget = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "AgentMath");
+        private static readonly string DefaultTarget = NormalizePath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "AgentMath"));
         private static string target = DefaultTarget;
         private static bool silent, noLaunch, noShortcuts, startup;
         private static string Quote(string value) { return "\"" + value.Replace("\"", "") + "\""; }
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        private static extern uint GetLongPathName(string path, StringBuilder output, uint capacity);
+        private static string NormalizePath(string value) {
+            string full = Path.GetFullPath(value);
+            var output = new StringBuilder(32768);
+            uint length = GetLongPathName(full, output, (uint)output.Capacity);
+            if (length > 0 && length < output.Capacity) return output.ToString();
+            // A new installation does not exist yet. Expand its existing parent
+            // so 8.3 aliases also compare correctly on the first install.
+            string parent = Path.GetDirectoryName(full);
+            if (!String.IsNullOrEmpty(parent) && !String.Equals(parent, full, StringComparison.OrdinalIgnoreCase))
+                return Path.Combine(NormalizePath(parent), Path.GetFileName(full));
+            return full;
+        }
         [STAThread] private static int Main(string[] args) {
             Application.EnableVisualStyles();
             bool uninstall = false, worker = false;
@@ -33,11 +48,11 @@ namespace AgentMathSetup {
             uninstall = true;
             if (Array.IndexOf(args, "--target") < 0) target = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
 #endif
-            target = Path.GetFullPath(target).TrimEnd(Path.DirectorySeparatorChar);
+            target = NormalizePath(target).TrimEnd(Path.DirectorySeparatorChar);
             try {
                 if (uninstall) {
                     if (!silent && !worker && MessageBox.Show("卸载 Agent Math？本地设置将保留，Codex 和终端不受影响。", "Agent Math", MessageBoxButtons.OKCancel) != DialogResult.OK) return 0;
-                    string current = Assembly.GetExecutingAssembly().Location;
+                    string current = NormalizePath(Assembly.GetExecutingAssembly().Location);
                     if (!worker && current.StartsWith(target + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)) {
                         string temp = Path.Combine(Path.GetTempPath(), "AgentMath-Uninstall-" + Guid.NewGuid().ToString("N"));
                         Directory.CreateDirectory(temp);
@@ -84,8 +99,8 @@ namespace AgentMathSetup {
         }
         private static void ValidateTarget() {
             if (target.Length < 12 || target == Path.GetPathRoot(target).TrimEnd('\\') ||
-                target == Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) ||
-                target == Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData))
+                String.Equals(target, NormalizePath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)), StringComparison.OrdinalIgnoreCase) ||
+                String.Equals(target, NormalizePath(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)), StringComparison.OrdinalIgnoreCase))
                 throw new Exception("请选择专用的应用目录。");
             if (Directory.Exists(target) && Directory.GetFileSystemEntries(target).Length > 0 && !IsOurDirectory(target))
                 throw new Exception("此目录中已有其他文件。请选择一个空目录。");
@@ -98,7 +113,7 @@ namespace AgentMathSetup {
             // and accidentally stop the user's companion from another path.
             bool ownsProcess = false;
             foreach (var process in Process.GetProcessesByName("AgentMath")) {
-                using (process) { try { if (String.Equals(process.MainModule.FileName, app, StringComparison.OrdinalIgnoreCase)) ownsProcess = true; } catch { } }
+                using (process) { try { if (String.Equals(NormalizePath(process.MainModule.FileName), app, StringComparison.OrdinalIgnoreCase)) ownsProcess = true; } catch { } }
             }
             if (!ownsProcess) return;
             using (var process = Process.Start(new ProcessStartInfo(app, "--quit") { UseShellExecute = false, CreateNoWindow = true })) process.WaitForExit(3000);
@@ -106,7 +121,7 @@ namespace AgentMathSetup {
             for (int i = 0; i < 30; i++) {
                 bool running = false;
                 foreach (var process in Process.GetProcessesByName("AgentMath")) {
-                    using (process) { try { if (String.Equals(process.MainModule.FileName, app, StringComparison.OrdinalIgnoreCase)) running = true; } catch { } }
+                    using (process) { try { if (String.Equals(NormalizePath(process.MainModule.FileName), app, StringComparison.OrdinalIgnoreCase)) running = true; } catch { } }
                 }
                 if (!running) return; Thread.Sleep(100);
             }
@@ -200,8 +215,8 @@ namespace AgentMathSetup {
             } finally { System.Runtime.InteropServices.Marshal.FinalReleaseComObject(shell); }
         }
         private static void CleanTemporaryHelper() {
-            string directory = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
-            string tempRoot = Path.GetFullPath(Path.GetTempPath()).TrimEnd('\\') + "\\AgentMath-Uninstall-";
+            string directory = NormalizePath(AppDomain.CurrentDomain.BaseDirectory).TrimEnd('\\');
+            string tempRoot = NormalizePath(Path.GetTempPath()).TrimEnd('\\') + "\\AgentMath-Uninstall-";
             if (!directory.StartsWith(tempRoot, StringComparison.OrdinalIgnoreCase)) return;
             string self = Assembly.GetExecutingAssembly().Location;
             string command = "Wait-Process -Id " + Process.GetCurrentProcess().Id + " -ErrorAction SilentlyContinue; Remove-Item -LiteralPath '" + self.Replace("'", "''") + "' -Force; Remove-Item -LiteralPath '" + directory.Replace("'", "''") + "'";

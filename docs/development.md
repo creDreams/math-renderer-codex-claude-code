@@ -67,7 +67,7 @@ Tabby 的 `frontend.xterm` 和 `.xterm-screen` DOM 是隔离在适配层中的�
 
 `npm ci` 使用 lockfile。`npm run build` 输出 CommonJS 插件、浏览器覆盖层、Apache 许可和 `dist/build-report.json`。插件保留 Tabby/Angular 及 Node 内建模块为 external，其余运行依赖随包提供。NewCM 动态字形表通过静态导入在本地预加载；更新字体版本后运行 `node scripts/update-fonts.mjs`，提交生成的导入清单，再验证离线排版。
 
-`.cache/` 保存下载与研究测试缓存，`dist/` 保存可重新生成的构建及发布包，`node_modules/` 保存由 lockfile 安装的依赖；三者均不进入源码仓库。普通用户使用 Releases 中的安装包或完整便携包，依赖已随包提供；开发者克隆后运行 `npm ci`，再按上文构建即可。安装器遇到目录短暂占用时重试最多 5 秒，持续占用时停止并保留旧应用；`test:windows-package` 使用真实 Windows 目录句柄检查这两条路径。
+`.cache/` 保存下载与研究测试缓存，`dist/` 保存可重新生成的构建及发布包，`node_modules/` 保存由 lockfile 安装的依赖；三者均不进入源码仓库。普通用户使用 Releases 中的安装包或完整便携包，依赖已随包提供；开发者克隆后运行 `npm ci`，再按上文构建即可。安装器统一现有父目录的 Windows 长短路径，正确识别目标目录中的运行实例和卸载器自身；遇到目录短暂占用时重试最多 5 秒，持续占用时停止并保留旧应用。`test:windows-package` 使用真实 Windows 目录句柄检查占用路径，并在卷支持时验证 8.3 别名更新及自卸载。
 
 `npm run pack:plugin` 生成本地 tgz，包含 README、许可、引擎和 SVG 字形表，不发布 npm 或远程仓库。安装脚本先复制到非插件名称的临时目录，再移动替换；旧版本保留备份。卸载仅将已验证包名的目录移出发现路径。用户显式传入 Tabby 插件目录，脚本不猜测系统配置位置。
 

@@ -13,9 +13,9 @@ const setup = path.resolve(`dist/releases/AgentMath-${version}-Setup.exe`);
 const temp = await mkdtemp(path.join(tmpdir(), 'AgentMath-package-'));
 const target = path.join(temp, '独立试用'), profile = path.join(temp, 'profile');
 const binary = path.join(target, 'AgentMath.exe');
-const checks = [], pause = ms => new Promise(resolve => setTimeout(resolve, ms));
+const checks = [], skipped = [], pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const check = label => { checks.push(label); console.log('PASS ' + label); };
-const install = () => exec(setup, ['--silent', '--no-launch', '--no-shortcuts', '--target', target], { windowsHide: true, timeout: 60000 });
+const install = (destination = target) => exec(setup, ['--silent', '--no-launch', '--no-shortcuts', '--target', destination], { windowsHide: true, timeout: 60000 });
 async function until(fn, timeout = 10000) {
   const start = Date.now();
   do { try { if (await fn()) return; } catch {} await pause(100); } while (Date.now() - start < timeout);
@@ -166,12 +166,24 @@ try {
   await assert.rejects(exec(setup, ['--silent', '--no-launch', '--no-shortcuts', '--target', unrelated]));
   assert.equal(await readFile(path.join(unrelated, 'keep.txt'), 'utf8'), 'keep');
   check('installer refuses to overwrite unrelated files');
-  await exec(path.join(target, 'Uninstall.exe'), ['--silent', '--target', target], { windowsHide: true });
+  const alias = (await exec(lockHelper, ['--short-path', target], { windowsHide: true })).stdout.trim();
+  assert.ok(alias, 'Windows returns an existing installation path');
+  if (alias.toLowerCase() !== target.toLowerCase()) {
+    await install(alias);
+    assert.equal(await readFile(path.join(profile, 'settings.json'), 'utf8'), originalSettings);
+    check('update accepts a Windows 8.3 directory alias and retains settings');
+  } else {
+    skipped.push('8.3 alias update: volume does not expose a different short path');
+    console.log('SKIP ' + skipped.at(-1));
+  }
+  // Assembly.Location may be a long path even when invoked through an 8.3
+  // alias. The uninstaller must still relocate before deleting its own file.
+  await exec(path.join(alias, 'Uninstall.exe'), ['--silent', '--target', alias], { windowsHide: true });
   await until(async () => { try { await access(target); return false; } catch { return true; } });
   assert.equal(await readFile(path.join(profile, 'settings.json'), 'utf8'), originalSettings);
-  check('installed uninstaller removes its own directory and retains settings');
+  check('installed uninstaller removes its own directory through the returned alias and retains settings');
   await mkdir('test-results', { recursive: true });
-  await writeFile('test-results/windows-package.json', JSON.stringify({ checks, passed: checks.length, runAt: new Date().toISOString() }, null, 2) + '\n');
+  await writeFile('test-results/windows-package.json', JSON.stringify({ checks, skipped, passed: checks.length, runAt: new Date().toISOString() }, null, 2) + '\n');
 } finally {
   if (host && host.exitCode === null) await exec(binary, ['--profile', profile, '--quit']).catch(() => {});
   // This exact, newly allocated temporary directory is the only recursive cleanup target.
