@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { execFile, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
 import { tmpdir } from 'node:os';
-import { mkdtemp, readFile, writeFile, mkdir, access, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile, mkdir, access, rm, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -15,7 +15,7 @@ const target = path.join(temp, '独立试用'), profile = path.join(temp, 'profi
 const binary = path.join(target, 'AgentMath.exe');
 const checks = [], pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const check = label => { checks.push(label); console.log('PASS ' + label); };
-const install = () => exec(setup, ['--silent', '--no-launch', '--no-shortcuts', '--target', target], { windowsHide: true });
+const install = () => exec(setup, ['--silent', '--no-launch', '--no-shortcuts', '--target', target], { windowsHide: true, timeout: 60000 });
 async function until(fn, timeout = 10000) {
   const start = Date.now();
   do { try { if (await fn()) return; } catch {} await pause(100); } while (Date.now() - start < timeout);
@@ -52,7 +52,7 @@ try {
   check('installed preview switch and pause persist independently and restart a working renderer');
   const workerPid = status.workerPid;
   await exec(binary, ['--profile', profile, '--quit']);
-  await until(() => { try { process.kill(workerPid, 0); return false; } catch { return true; } });
+  await until(() => { try { process.kill(workerPid, 0); return false; } catch { return host.exitCode !== null; } });
   check('installed app exits and cleans its worker');
   // Exercise the bundled renderer itself using synthetic session data.
   const home = path.join(temp, 'codex'); await mkdir(path.join(home, 'sessions'), { recursive: true });
@@ -106,11 +106,61 @@ try {
     }
   }
   check('installed offline worker preserves marked blocks while on/off/on toggles larger inline and unmarked character images');
+  const lockHelper = path.join(temp, 'hold-directory.exe');
+  const compiler = path.join(process.env.WINDIR ?? 'C:\\Windows', 'Microsoft.NET/Framework64/v4.0.30319/csc.exe');
+  await exec(compiler, ['/nologo', '/target:exe', '/out:' + lockHelper, path.resolve('tests/native/InstallerLockFixture.cs')], { windowsHide: true });
+  const payload = await Promise.all((await readdir(buildDirectory, { recursive: true, withFileTypes: true }))
+    .filter(entry => entry.isFile()).map(async entry => {
+      const file = path.join(entry.parentPath, entry.name);
+      return { name: path.relative(buildDirectory, file), size: (await stat(file)).size };
+    }));
+  let lockIndex = 0;
+  async function lockedUpdate(releaseEarly) {
+    const ready = path.join(temp, 'lock-' + (++lockIndex) + '.ready'), release = ready + '.release';
+    const holder = spawn(lockHelper, [target, ready, release], { windowsHide: true, stdio: 'ignore' });
+    const closed = new Promise(resolve => holder.once('exit', resolve));
+    try {
+      await until(async () => { await access(ready); return true; });
+      // Start the real installer while a real Windows directory lock is held.
+      const pending = install().then(() => ({ ok: true }), error => ({ ok: false, error }));
+      // Wait until extraction is complete before releasing the lock: releasing
+      // during extraction would pass without exercising the move retry at all.
+      if (releaseEarly) {
+        await until(async () => {
+          const stages = (await readdir(temp)).filter(name => name.startsWith('.AgentMath-stage-'));
+          for (const stage of stages) {
+            const sizes = await Promise.all(payload.map(async file =>
+              (await stat(path.join(temp, stage, file.name))).size === file.size));
+            if (sizes.every(Boolean)) return true;
+          }
+          return false;
+        }, 45000);
+        assert.equal(holder.exitCode, null, 'directory lock remains held after extraction');
+        await pause(1500); await writeFile(release, 'release');
+      }
+      const result = await pending;
+      if (releaseEarly && !result.ok) throw result.error;
+      if (!releaseEarly) {
+        assert.equal(result.ok, false, 'persistent lock fails within the installer deadline');
+        assert.match(result.error.stderr, /Unable to move installation directory/, 'failure identifies the contended operation');
+        assert.equal(holder.exitCode, null, 'failure occurs while the directory remains locked');
+      }
+    } finally {
+      await writeFile(release, 'release');
+      const cleanup = setTimeout(() => holder.kill(), 3000);
+      await closed; clearTimeout(cleanup);
+    }
+  }
   await writeFile(path.join(target, 'update-sentinel.txt'), 'previous version');
-  await install();
+  await lockedUpdate(false);
+  assert.equal(await readFile(path.join(target, 'update-sentinel.txt'), 'utf8'), 'previous version');
+  assert.equal(await readFile(path.join(profile, 'settings.json'), 'utf8'), originalSettings);
+  assert.deepEqual(await readFile(path.join(target, 'AgentMath.exe')), await readFile(path.join(buildDirectory, 'AgentMath.exe')));
+  check('persistent installation lock fails within a deadline and preserves the previous app and settings');
+  await lockedUpdate(true);
   await assert.rejects(access(path.join(target, 'update-sentinel.txt')));
   assert.equal(await readFile(path.join(profile, 'settings.json'), 'utf8'), originalSettings);
-  check('update replaces installation while retaining external settings');
+  check('update tolerates a transient Windows directory lock and retains external settings');
   const unrelated = path.join(temp, 'unrelated'); await mkdir(unrelated);
   await writeFile(path.join(unrelated, 'keep.txt'), 'keep');
   await assert.rejects(exec(setup, ['--silent', '--no-launch', '--no-shortcuts', '--target', unrelated]));

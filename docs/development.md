@@ -67,13 +67,15 @@ Tabby 的 `frontend.xterm` 和 `.xterm-screen` DOM 是隔离在适配层中的�
 
 `npm ci` 使用 lockfile。`npm run build` 输出 CommonJS 插件、浏览器覆盖层、Apache 许可和 `dist/build-report.json`。插件保留 Tabby/Angular 及 Node 内建模块为 external，其余运行依赖随包提供。NewCM 动态字形表通过静态导入在本地预加载；更新字体版本后运行 `node scripts/update-fonts.mjs`，提交生成的导入清单，再验证离线排版。
 
+`.cache/` 保存下载与研究测试缓存，`dist/` 保存可重新生成的构建及发布包，`node_modules/` 保存由 lockfile 安装的依赖；三者均不进入源码仓库。普通用户使用 Releases 中的安装包或完整便携包，依赖已随包提供；开发者克隆后运行 `npm ci`，再按上文构建即可。安装器遇到目录短暂占用时重试最多 5 秒，持续占用时停止并保留旧应用；`test:windows-package` 使用真实 Windows 目录句柄检查这两条路径。
+
 `npm run pack:plugin` 生成本地 tgz，包含 README、许可、引擎和 SVG 字形表，不发布 npm 或远程仓库。安装脚本先复制到非插件名称的临时目录，再移动替换；旧版本保留备份。卸载仅将已验证包名的目录移出发现路径。用户显式传入 Tabby 插件目录，脚本不猜测系统配置位置。
 
 ## 调试与测试
 
 `npm run dev:tabby` 使用本项目 portable 宿主，提供本机 CDP 9223 和 `__agentMath` 诊断接口。实际会话测试前，在宿主内照常运行 Codex，得到一个完整的 `\[...\]` 回答。`npm run test:tabby` 检查注册的插件、detach/attach、缓冲区不变、真实自动匹配、宿主右键菜单开关，然后生成忽略的报告/截图。它不向终端写入测试内容，也不自动发起模型请求。
 
-`npm run test:browser` 使用独立双终端接收完全相同的数据，比较全部单元格字符、宽度、颜色模式与样式、光标、缓冲区和滚动位置。输出截图与性能数据在 `test-results/`。当前 P95 扫描/匹配预算为 25 ms，冷 SVG 排版预算为 100 ms；慢速 CI 可显式设置 `AMT_PERF_BUDGET_MS`，所附 Windows CI 配置为 50 ms。CI 文件已准备，远程运行尚未发生。这些是固定样本下的回归门槛，不是全部硬件的交互延迟承诺。
+`npm run test:browser` 使用独立双终端接收完全相同的数据，比较全部单元格字符、宽度、颜色模式与样式、光标、缓冲区和滚动位置。输出截图与性能数据在 `test-results/`。当前 P95 扫描/匹配预算为 25 ms，冷 SVG 排版预算为 100 ms；慢速 CI 可显式设置 `AMT_PERF_BUDGET_MS`，所附 Windows CI 配置为 50 ms。远程执行结果见 [GitHub Actions](https://github.com/creDreams/terminal-math-renderer/actions/workflows/verify.yml)。这些是固定样本下的回归门槛，不是全部硬件的交互延迟承诺。
 
 普通启动器 `npm run start:tabby` 不开放调试端口。关闭终端标签页时，插件清理定时器、ResizeObserver、事件订阅与 DOM；PTY 和 Codex 进程的退出仍由 Tabby 管理。
 

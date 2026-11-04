@@ -112,6 +112,27 @@ namespace AgentMathSetup {
             }
             throw new Exception("请从系统托盘退出 Agent Math，然后重试。");
         }
+        private static void FileOperation(Action operation, string description) {
+            // Windows may briefly retain executable/directory handles after a
+            // process exits or while scanning newly extracted binaries. Retry
+            // only filesystem contention, with a fixed deadline; never kill
+            // another process or change permissions to force an update.
+            var watch = Stopwatch.StartNew();
+            for (;;) {
+                Exception failure;
+                try { operation(); return; }
+                catch (IOException error) { failure = error; }
+                catch (UnauthorizedAccessException error) { failure = error; }
+                if (watch.ElapsedMilliseconds >= 5000) throw new IOException(description + "\r\n" + failure.Message, failure);
+                Thread.Sleep(100);
+            }
+        }
+        private static void MoveDirectory(string source, string destination) {
+            FileOperation(delegate { Directory.Move(source, destination); }, "Unable to move installation directory: " + source);
+        }
+        private static void DeleteDirectory(string directory) {
+            FileOperation(delegate { Directory.Delete(directory, true); }, "Unable to remove installation directory: " + directory);
+        }
         private static void Install() {
             ValidateTarget();
             string parent = Path.GetDirectoryName(target); Directory.CreateDirectory(parent);
@@ -132,9 +153,9 @@ namespace AgentMathSetup {
                     }
                 }
                 if (!IsOurDirectory(stage) || !File.Exists(Path.Combine(stage, "AgentMath.exe"))) throw new Exception("安装包不完整。");
-                if (Directory.Exists(target)) { StopApp(); Directory.Move(target, backup); }
-                try { Directory.Move(stage, target); }
-                catch { if (Directory.Exists(backup)) Directory.Move(backup, target); throw; }
+                if (Directory.Exists(target)) { StopApp(); MoveDirectory(target, backup); }
+                try { MoveDirectory(stage, target); }
+                catch { if (Directory.Exists(backup)) MoveDirectory(backup, target); throw; }
                 if (!noShortcuts) {
                     Shortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "Agent Math.lnk"), Path.Combine(target, "AgentMath.exe"), "");
                     string login = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Agent Math.lnk");
@@ -150,14 +171,14 @@ namespace AgentMathSetup {
                         key.SetValue("NoModify", 1); key.SetValue("NoRepair", 1);
                     }
                 }
-                if (Directory.Exists(backup)) Directory.Delete(backup, true);
+                if (Directory.Exists(backup)) DeleteDirectory(backup);
                 if (!noLaunch) Process.Start(new ProcessStartInfo(Path.Combine(target, "AgentMath.exe")) { UseShellExecute = true });
-            } finally { if (Directory.Exists(stage)) Directory.Delete(stage, true); }
+            } finally { if (Directory.Exists(stage)) DeleteDirectory(stage); }
         }
         private static void Uninstall() {
             if (!Directory.Exists(target)) return;
             if (!IsOurDirectory(target)) throw new Exception("此目录不是 Agent Math 安装目录，未删除任何文件。");
-            StopApp(); Directory.Delete(target, true);
+            StopApp(); DeleteDirectory(target);
             if (String.Equals(target, DefaultTarget, StringComparison.OrdinalIgnoreCase)) {
                 foreach (var link in new string[] {
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "Agent Math.lnk"),
