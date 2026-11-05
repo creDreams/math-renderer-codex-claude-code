@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 process.chdir(fileURLToPath(new URL('../', import.meta.url)));
-const exec = promisify(execFile), version = '0.2.0-preview.31';
+const exec = promisify(execFile), version = '0.2.0-preview.32';
 const compiler = path.join(process.env.WINDIR ?? 'C:\\Windows', 'Microsoft.NET/Framework64/v4.0.30319/csc.exe');
 const source = path.resolve('packages/windows-companion/installer/Setup.cs');
 const output = path.resolve(process.env.AGENT_MATH_BUILD_DIR ?? 'dist/windows'), release = path.resolve('dist/releases');

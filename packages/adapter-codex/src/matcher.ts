@@ -348,6 +348,7 @@ export function matchCodex(snapshot: ScreenSnapshot, sessions: CodexSession[], o
       verifiedRanges.push({ startRow: screen.startRow, endRow: screen.endRow });
       const { approved, visible } = verified;
       if (approved.length !== visible.length) continue;
+      const compactDisplays: FormulaRegion[] = [];
       for (const [index, formula] of visible.entries()) {
         const source = approved[index];
         if (!source || !displayMatches(source.tex, formula.tex)) continue;
@@ -362,8 +363,10 @@ export function matchCodex(snapshot: ScreenSnapshot, sessions: CodexSession[], o
       for (const formula of options.inlineMath ? verified.native : []) {
         const points = screen.locations.slice(formula.start, formula.end).filter((x): x is CellLocation => !!x);
         if (!points.length) continue;
-        regions.push({ tex: formula.tex, startRow: points[0]!.row, endRow: points.at(-1)!.row,
-          startColumn: Math.min(...points.map(point => point.column)), endColumn: snapshot.cols, requiresPreview: true });
+        const region = { tex: formula.tex, startRow: points[0]!.row, endRow: points.at(-1)!.row,
+          startColumn: Math.min(...points.map(point => point.column)), endColumn: snapshot.cols, requiresPreview: true };
+        regions.push(region);
+        if (region.startRow === region.endRow) compactDisplays.push(region);
       }
       for (const formula of verified.inline) {
         const points = screen.locations.slice(formula.start, formula.end).filter((x): x is CellLocation => !!x);
@@ -373,6 +376,24 @@ export function matchCodex(snapshot: ScreenSnapshot, sessions: CodexSession[], o
           endColumn: points.at(-1)!.column + 1 });
       }
       regions.sort((a, b) => a.startRow - b.startRow || a.startColumn - b.startColumn);
+      // Codex can collapse a source display into a single character row. Its
+      // adjacent paragraph spacing is real usable space, unlike a prose inline
+      // substring. Claim at most one empty row on either side, inside the same
+      // verified answer and without sharing a row with any other image. Exclude
+      // trailing blank rows: the native streaming proof ends at the last text.
+      if (compactDisplays.length) {
+        const rows = snapshot.lines.filter(line => line.startRow >= screen.startRow && line.endRow <= screen.endRow);
+        const lastTextRow = rows.reduce((last, line) => line.text.trim() ? line.endRow : last, screen.startRow);
+        const blank = new Set(rows.filter(line => !line.text.trim() && line.startRow === line.endRow).map(line => line.startRow));
+        const occupied = new Set<number>();
+        for (const region of regions) for (let row = region.startRow; row <= region.endRow; row++) occupied.add(row);
+        for (const region of compactDisplays) {
+          if (region.startRow > screen.startRow && blank.has(region.startRow - 1) && !occupied.has(region.startRow - 1))
+            occupied.add(--region.startRow);
+          if (region.endRow < lastTextRow && blank.has(region.endRow + 1) && !occupied.has(region.endRow + 1))
+            occupied.add(++region.endRow);
+        }
+      }
     }
     return { session, regions, evidence, verifiedRanges };
   }).filter(x => x.evidence > 0);

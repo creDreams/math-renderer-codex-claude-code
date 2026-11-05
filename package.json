@@ -1,6 +1,6 @@
 {
   "name": "agent-math-terminal",
-  "version": "0.2.0-preview.31",
+  "version": "0.2.0-preview.32",
   "private": true,
   "type": "module",
   "description": "LaTeX and math rendering for Codex CLI and Claude Code in Windows Terminal.",

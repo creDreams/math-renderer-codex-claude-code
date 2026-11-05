@@ -156,9 +156,11 @@ test('visible table tails and native character formulas do not remove neighborin
     assert.equal(result.formulas.length, inlineMath ? 5 : 4, 'viewport table row ' + row); assert.equal(result.skipped, 0);
     const text = lines.slice(row).join('\n');
     const nativeRow = text.slice(0, text.indexOf('T(s)=T_{L}')).split('\n').length - 1;
+    // The compact display may use the empty paragraph row immediately below it.
+    assert.equal(text.split('\n')[nativeRow + 1], '');
     const expected = [...findDisplayMath(text).map(block =>
       [text.slice(0, block.start).split('\n').length - 1, text.slice(0, block.end).split('\n').length - 1]),
-      ...(inlineMath ? [[nativeRow, nativeRow]] : [])].sort((a, b) => a[0]! - b[0]!);
+      ...(inlineMath ? [[nativeRow, nativeRow + 1]] : [])].sort((a, b) => a[0]! - b[0]!);
     assert.deepEqual(result.formulas.map(block => [block.startRow, block.endRow]), expected);
   }
 });

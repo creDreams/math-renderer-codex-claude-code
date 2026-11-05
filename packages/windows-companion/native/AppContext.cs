@@ -234,7 +234,7 @@ namespace AgentMath {
                         imageWidth = window.ImageWidth, imageHeight = window.ImageHeight,
                         hitTestOwner = Native.GetAncestor(Native.WindowFromPoint(point), 2).ToInt64() });
                 }
-                var status = new { version = "0.2.0-preview.31", pid = Process.GetCurrentProcess().Id,
+                var status = new { version = "0.2.0-preview.32", pid = Process.GetCurrentProcess().Id,
                     enabled = enabled, inlineMath = inlineEnabled, state = state, observerError = observer.Error, workerReady = worker != null && worker.Ready,
                     workerPid = worker != null ? worker.Pid : 0,
                     targetHwnd = capture != null ? capture.Hwnd : 0,

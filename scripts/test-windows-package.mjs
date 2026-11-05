@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 process.chdir(fileURLToPath(new URL('../', import.meta.url)));
-const exec = promisify(execFile), version = '0.2.0-preview.31';
+const exec = promisify(execFile), version = '0.2.0-preview.32';
 const buildDirectory = path.resolve(process.env.AGENT_MATH_BUILD_DIR ?? 'dist/windows');
 const setup = path.resolve(`dist/releases/AgentMath-${version}-Setup.exe`);
 const temp = await mkdtemp(path.join(tmpdir(), 'AgentMath-package-'));
