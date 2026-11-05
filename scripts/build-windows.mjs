@@ -72,6 +72,6 @@ await mkdir('.cache', { recursive: true });
 if (!existsSync(nodeLicense))
   await download('https://raw.githubusercontent.com/nodejs/node/v24.19.0/LICENSE', nodeLicense);
 await copyFile(nodeLicense, path.join(output, 'NODE_LICENSE.txt'));
-await writeFile(path.join(output, 'product.json'), JSON.stringify({ name: 'Agent Math', version: '0.2.0-preview.30',
+await writeFile(path.join(output, 'product.json'), JSON.stringify({ name: 'Agent Math', version: '0.2.0-preview.31',
   platform: 'win32-x64', node: '24.19.0', nodeSha256: runtimeHash, resvg: '2.6.2' }, null, 2) + '\n');
 console.log('Built ' + path.relative(process.cwd(), path.join(output, 'AgentMath.exe')) + ' with bundled offline renderer and runtime.');

@@ -58,8 +58,11 @@ export class MathRenderer {
     this.largerScripts = largerScripts;
     try { node = this.document.convert(tex, { display, em: 16, ex: 8, containerWidth: 1280 }); }
     finally { this.largerScripts = false; }
-    const svgs = this.adaptor.tags(node, 'svg');
-    if (svgs.length !== 1) throw new Error('Formula must produce exactly one complete SVG');
+    // Count complete output images, not their descendants. MathJax uses nested
+    // SVG viewports to clip the extenders of long braces and arrows. These
+    // belong to the same formula; separate inline fragments are root siblings.
+    const svgs = this.adaptor.tags(node, 'svg').filter(svg => this.adaptor.parent(svg) === node);
+    if (svgs.length !== 1) throw new Error('Formula must produce exactly one complete outer SVG');
     const svgNode = svgs[0]!;
     const box = this.adaptor.getAttribute(svgNode, 'viewBox')!.split(/\s+/).map(Number);
     const width = box[2]! / 1000 * 16;

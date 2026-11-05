@@ -12,7 +12,7 @@ using Microsoft.Win32;
 
 namespace AgentMathSetup {
     internal static class Setup {
-        private const string Version = "0.2.0-preview.30";
+        private const string Version = "0.2.0-preview.31";
         private const string RegistryPath = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\AgentMath";
         private static readonly string DefaultTarget = NormalizePath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "AgentMath"));
         private static string target = DefaultTarget;
