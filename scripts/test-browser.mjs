@@ -15,8 +15,9 @@ const executablePath = process.env.CHROME_PATH ?? [
 ].find(existsSync);
 const browser = await chromium.launch({ executablePath, headless: true });
 const checks = [];
+let page;
 try {
-  const page = await browser.newPage({ viewport: { width: 1500, height: 1000 } });
+  page = await browser.newPage({ viewport: { width: 1500, height: 1000 } });
   await page.setContent('<style>body{background:#161616;display:flex;gap:20px}.terminal{width:700px;height:900px}</style><div class="terminal" id="base"></div><div class="terminal" id="enhanced"></div>');
   await page.addStyleTag({ path: 'node_modules/@xterm/xterm/css/xterm.css' });
   await page.addScriptTag({ path: 'test-results/browser.js' });
@@ -41,15 +42,22 @@ try {
         const line=t.buffer.active.getLine(y);
         return [line.isWrapped, Array.from({length:t.cols},(_,x)=> {const c=line.getCell(x);return [c.getChars(),c.getWidth(),c.getFgColorMode(),c.getFgColor(),c.getBgColorMode(),c.getBgColor(),c.isBold(),c.isItalic(),c.isUnderline(),c.isInverse()];})];
       }) });
-    globalThis.test = { base, enhanced, overlay, write, state, keys, tui, message };
+    const plane = enhanced.element.querySelector('.agent-math-plane');
+    const mutations = new MutationObserver(() => { test.lastOverlayMutation = performance.now(); });
+    globalThis.test = { base, enhanced, overlay, write, state, keys, tui, message,
+      mutations, lastOverlayMutation: performance.now() };
+    mutations.observe(plane, { childList: true, subtree: true, attributes: true });
   });
   const settle = async expectedCount => {
-    await page.waitForTimeout(130);
-    // Rendering waits for terminal/browser frames. A fixed 130 ms delay can
-    // expire before those frames on a busy CI runner; retain the same exact
-    // count assertion, but wait for the observable result with a deadline.
-    if (expectedCount !== undefined) await page.waitForFunction(expected =>
-      document.querySelectorAll('.agent-math-formula').length === expected, expectedCount, { timeout: 10000 });
+    // Several terminal/browser frames can repaint the plane on a busy CI
+    // runner. Wait for the exact result AND a quiet DOM interval, so a brief
+    // first paint cannot satisfy the check just before a queued invalidation.
+    const started = await page.evaluate(() => performance.now());
+    await page.waitForFunction(({ expected, started }) => {
+      const count = document.querySelectorAll('.agent-math-formula').length;
+      return (expected === undefined || count === expected) &&
+        performance.now() - Math.max(started, test.lastOverlayMutation) >= 200;
+    }, { expected: expectedCount, started }, { timeout: 10000 });
   };
   const equal = async name => {
     assert.ok(await page.evaluate(() => test.state(test.base) === test.state(test.enhanced)), name);
@@ -141,8 +149,17 @@ try {
   assert.ok(performanceReport.scanMatchP95Ms<Number(process.env.AMT_PERF_BUDGET_MS??25),'scan/match P95 exceeds local 25 ms budget');
   assert.ok(performanceReport.coldRenderMs<100,'cold SVG typesetting exceeds 100 ms budget');
   checks.push('bounded scan/match and cold SVG meet local performance budgets');
-  await page.evaluate(() => {test.base.dispose();test.enhanced.dispose();});
+  await page.evaluate(() => {test.mutations.disconnect();test.base.dispose();test.enhanced.dispose();});
   await writeFile('test-results/browser.json', JSON.stringify({ checks, performance:performanceReport }, null, 2) + '\n');
   console.log('Performance:',performanceReport);
   console.log(`Browser checks passed (${checks.length}):\n${checks.map(x => '- ' + x).join('\n')}`);
+} catch (error) {
+  console.error('Browser failure diagnostics:', await page?.evaluate(() => {
+    const current = globalThis.test;
+    return { readyState: document.readyState, fonts: document.fonts.status,
+      count: document.querySelectorAll('.agent-math-formula').length,
+      status: current?.overlay.status, mutationAgeMs: current ? performance.now() - current.lastOverlayMutation : null,
+      screen: current?.enhanced.element.querySelector('.xterm-screen')?.getBoundingClientRect().toJSON() };
+  }).catch(() => null));
+  throw error;
 } finally { await browser.close(); }
