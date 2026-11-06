@@ -6,7 +6,7 @@
 
 继续使用现有终端，照常运行 `codex` 或 `claude`。插件以独立的 Windows 后台显示组件运行，将支持的公式显示为易读排版；拖选涉及公式时显示原文，复制仍取得终端源码，清除选区后恢复渲染。
 
-当前版本：**0.2.0-preview.30** · **Windows x64** · [MIT](LICENSE)。应用和托盘中的名称为 **Agent Math**。
+当前版本：**0.2.0-preview.32** · **Windows x64** · [MIT](LICENSE)。应用和托盘中的名称为 **Agent Math**。
 
 ## 使用前后对比
 
@@ -22,13 +22,13 @@
 
 ## 安装与使用
 
-1. 下载并运行 [Windows x64 安装包](https://github.com/creDreams/terminal-math-renderer/releases/download/v0.2.0-preview.30/AgentMath-0.2.0-preview.30-Setup.exe)。也可下载[便携 ZIP](https://github.com/creDreams/terminal-math-renderer/releases/download/v0.2.0-preview.30/AgentMath-0.2.0-preview.30-windows-x64.zip)，完整解压后运行 `AgentMath.exe`。
+1. 下载并运行 [Windows x64 安装包](https://github.com/creDreams/math-renderer-codex-claude-code/releases/download/v0.2.0-preview.32/AgentMath-0.2.0-preview.32-Setup.exe)。也可下载[便携 ZIP](https://github.com/creDreams/math-renderer-codex-claude-code/releases/download/v0.2.0-preview.32/AgentMath-0.2.0-preview.32-windows-x64.zip)，完整解压后运行 `AgentMath.exe`。
 2. 启动 Agent Math，然后照常在 Windows Terminal 中使用 Codex 或 Claude Code。Claude 无标记数学块及可选的 Codex 行内公式需要勾选托盘中的 **行内与无标记公式（预览）**，该选项默认关闭。
 3. 保持完整公式可见，助手消息写入本地记录后会自动核验、渲染。拖选公式可查看和复制原文；从托盘暂停组件可查看全部原始文字。
 
 无需安装 Node.js、npm、浏览器、Tabby 或独立 LaTeX 环境，无需重启现有 Agent 会话。关闭状态窗口后仍在托盘运行，完全停止请从托盘选择退出。
 
-[所有发布版本](https://github.com/creDreams/terminal-math-renderer/releases) · [SHA-256 校验文件](https://github.com/creDreams/terminal-math-renderer/releases/download/v0.2.0-preview.30/SHA256SUMS.txt)。当前为未签名预览版。
+[所有发布版本](https://github.com/creDreams/math-renderer-codex-claude-code/releases) · [SHA-256 校验文件](https://github.com/creDreams/math-renderer-codex-claude-code/releases/download/v0.2.0-preview.32/SHA256SUMS.txt)。当前为未签名预览版。
 
 ## 支持范围
 
@@ -38,6 +38,7 @@
 | Claude 数学代码块 | 开启预览后支持无标准公式标签的数学区域、自定义函数、复合下标、连续等式与简短说明 |
 | Claude 显式公式 | 支持已有块分隔符及 `math` / `latex` / `tex` 代码块 |
 | Codex 行内公式 | 可选预览；需明确识别、完整位于同一物理行且空间足够 |
+| Codex 独立字符公式 | 开启预览后，可利用紧邻且已核验的空白行放大复合下标，不遮挡正文 |
 | 选择与复制 | 只撤下与选区相交的公式，复制得到终端原文 |
 | 流式输出与历史回看 | 按可见内容渲染，固定上限缓存；状态重绘时保留已核验的历史公式 |
 | 用户输入、工具输出和普通程序代码 | 保留原文 |

@@ -6,10 +6,10 @@
   "description": "LaTeX and math rendering for Codex CLI and Claude Code in Windows Terminal.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/creDreams/terminal-math-renderer.git"
+    "url": "https://github.com/creDreams/math-renderer-codex-claude-code.git"
   },
-  "homepage": "https://github.com/creDreams/terminal-math-renderer#readme",
-  "bugs": "https://github.com/creDreams/terminal-math-renderer/issues",
+  "homepage": "https://github.com/creDreams/math-renderer-codex-claude-code#readme",
+  "bugs": "https://github.com/creDreams/math-renderer-codex-claude-code/issues",
   "license": "MIT",
   "engines": {
     "node": ">=22.13"

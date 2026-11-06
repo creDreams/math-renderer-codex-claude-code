@@ -6,7 +6,7 @@
 
 Keep your existing terminal and run `codex` or `claude` as usual. This Windows add-on detects supported formulas in assistant replies and renders them in place. Select a formula to reveal and copy its original source; clear the selection to restore rendering.
 
-Current version: **0.2.0-preview.30** · **Windows x64** · [MIT](LICENSE).
+Current version: **0.2.0-preview.32** · **Windows x64** · [MIT](LICENSE).
 
 ## Before and after
 
@@ -22,13 +22,13 @@ These are real Windows Terminal captures of synthetic Codex-style and Claude-sty
 
 ## Install and use
 
-1. Download the [Windows x64 installer](https://github.com/creDreams/terminal-math-renderer/releases/download/v0.2.0-preview.30/AgentMath-0.2.0-preview.30-Setup.exe) and install **Agent Math**, the companion application. A [portable ZIP](https://github.com/creDreams/terminal-math-renderer/releases/download/v0.2.0-preview.30/AgentMath-0.2.0-preview.30-windows-x64.zip) is also available: extract it completely and run `AgentMath.exe`.
+1. Download the [Windows x64 installer](https://github.com/creDreams/math-renderer-codex-claude-code/releases/download/v0.2.0-preview.32/AgentMath-0.2.0-preview.32-Setup.exe) and install **Agent Math**, the companion application. A [portable ZIP](https://github.com/creDreams/math-renderer-codex-claude-code/releases/download/v0.2.0-preview.32/AgentMath-0.2.0-preview.32-windows-x64.zip) is also available: extract it completely and run `AgentMath.exe`.
 2. Start Agent Math, then use Codex or Claude Code in Windows Terminal as usual. For Claude mathematical code blocks and optional Codex inline formulas, enable **Inline and unmarked math (preview)** (`行内与无标记公式（预览）`) in the system tray menu. This option is off by default.
 3. Keep the complete formula visible. Rendering starts after its assistant source is available locally. Drag-select a formula to expose the source, or pause the add-on from the tray to see all original text.
 
 No Node.js, npm, browser, Tabby, or separate LaTeX installation is needed for the packaged application. Existing agent sessions can continue. Closing the status window leaves the application running in the tray; choose **Exit** there to stop it.
 
-[All releases](https://github.com/creDreams/terminal-math-renderer/releases) · [SHA-256 checksums](https://github.com/creDreams/terminal-math-renderer/releases/download/v0.2.0-preview.30/SHA256SUMS.txt). The current preview is unsigned.
+[All releases](https://github.com/creDreams/math-renderer-codex-claude-code/releases) · [SHA-256 checksums](https://github.com/creDreams/math-renderer-codex-claude-code/releases/download/v0.2.0-preview.32/SHA256SUMS.txt). The current preview is unsigned.
 
 ## What it supports
 
@@ -38,6 +38,7 @@ No Node.js, npm, browser, Tabby, or separate LaTeX installation is needed for th
 | Claude mathematical code blocks | With preview enabled, recognizes supported unmarked math, custom functions, compound subscripts, continued equalities, and short annotations |
 | Explicit Claude math | Handles supported display delimiters and `math` / `latex` / `tex` blocks |
 | Codex inline formulas | Optional preview for explicit inline math and selected unmarked expressions when they fit the original physical line |
+| Codex standalone character formulas | With preview enabled, uses adjacent verified empty rows to enlarge compact subscripts without covering prose |
 | Selection and copying | Reveals only the selected formulas; copying keeps the terminal source |
 | Streaming and history | Renders visible content on demand, caches images with fixed limits, and retains verified historical formulas during status redraws |
 | Ordinary code, user input, and tool output | Keeps the original text |
@@ -75,7 +76,7 @@ Builds appear in `dist/releases/`. `Start Agent Math.cmd` also launches a local 
 
 Interactive desktop checks include `npm run test:windows` and `npm run test:windows-claude`. They open disposable test windows and operate the mouse/keyboard, so run them on an available interactive desktop. They use synthetic transcripts and do not call a model. `test:windows-live*` commands separately make real model requests and consume usage. To reproduce the documentation screenshots, run `npm run capture:showcase`.
 
-[CI workflow](https://github.com/creDreams/terminal-math-renderer/actions/workflows/verify.yml) · [Development notes](docs/development.md) · [Changelog](CHANGELOG.md).
+[CI workflow](https://github.com/creDreams/math-renderer-codex-claude-code/actions/workflows/verify.yml) · [Development notes](docs/development.md) · [Changelog](CHANGELOG.md).
 
 ## More information
 

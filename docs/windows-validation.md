@@ -1,6 +1,6 @@
 # Windows 原生预览版验收
 
-日期：2026-11-05。当前本机构建与默认后台：`0.2.0-preview.32`，已启用，worker 就绪。GitHub 已发布的 `.30` 安装包不包含 `.31` 和 `.32` 修复；本地产物位于忽略目录 `dist/releases/`。
+发布日期：2026-11-06。`0.2.0-preview.32` 汇集 `.31` 的伸缩符号修复和 `.32` 的单行独立公式放大；源码及下载地址统一为 [creDreams/math-renderer-codex-claude-code](https://github.com/creDreams/math-renderer-codex-claude-code)。以下为 2026-11-05 最终构建的本机验收记录，安装包及便携包位于忽略目录 `dist/releases/`，通过 GitHub Releases 分发。
 
 .32 改善 Codex 压成单行字符的独立块公式。仅借用已核验回答内紧邻的空白行，上下各最多一行，不改变终端行数；真正夹在正文中的行内公式仍使用原始子串。28 px 行高下，四个复合下标的集合公式从 162×20 px 增至 400×49 px；顶部空白滚出视口后适配为 327×40 px，完整公式继续显示。新增三项 TS 回归覆盖真实 PNG 尺寸、相邻公式共用空行、正文/代码/角色与开关保护，以及 6 种视口高度下的逐行裁切和缓存身份。最终 `npm run verify` 通过 147 项 TS、14 项浏览器、类型/构建及插件生命周期；最终安装包 10 项检查全部通过。
 
@@ -26,7 +26,7 @@
 
 .30 完整 Claude 桌面回放 30 项通过，包括 130 种位置/布局、54 组常见公式、DPO 的 20 个位置、GSPO 的 15 个位置和全部八条表达式，以及开关、统一配色、原生/自绘选区、实际拖选、历史滚动和连续 32 帧状态重绘。补充代码块内显式标签兼容路径并重新构建后，再对最终二进制执行全部交互、新增 GSPO 和显式标签开关检查：30 项通过；该次使用 `--interactions-only`，不重复 130 种位置循环。完整回放报告保留在 `.cache/windows-claude30-full.json`，最终交互报告为 `test-results/windows-claude.json`，均位于忽略目录。
 
-.30 的 Codex 原生桌面交互 45 项及流式/状态重绘 5 项全部通过；Working 动画与未落盘的下一回答各捕获 17 个不同画面，均零撤图、零缺失采样。该回归完成于最后的 Claude 专用显式标签兼容修正之前，Codex 与原生实现随后未改变。前台切换中断的早期轮次未计为通过，没有为绕过前台保护而放宽校验。首轮公开 CI 通过源码、构建及原生检查，但覆盖更新遇到目录访问被拒绝；随后安装器增加最多 5 秒的文件操作重试与具体错误信息。最终本机安装包 10 项检查通过，包含真实 Windows 目录句柄持续占用时保留旧应用、临时占用解除后完成更新及设置保留。生成 `AgentMath-0.2.0-preview.30-Setup.exe` 与便携 zip，体积和 SHA-256 见 `dist/releases/release.json`；公开 CI 状态见 [GitHub Actions](https://github.com/creDreams/terminal-math-renderer/actions/workflows/verify.yml)，下载见 [Releases](https://github.com/creDreams/terminal-math-renderer/releases)。
+.30 的 Codex 原生桌面交互 45 项及流式/状态重绘 5 项全部通过；Working 动画与未落盘的下一回答各捕获 17 个不同画面，均零撤图、零缺失采样。该回归完成于最后的 Claude 专用显式标签兼容修正之前，Codex 与原生实现随后未改变。前台切换中断的早期轮次未计为通过，没有为绕过前台保护而放宽校验。首轮公开 CI 通过源码、构建及原生检查，但覆盖更新遇到目录访问被拒绝；随后安装器增加最多 5 秒的文件操作重试与具体错误信息。最终本机安装包 10 项检查通过，包含真实 Windows 目录句柄持续占用时保留旧应用、临时占用解除后完成更新及设置保留。生成 `AgentMath-0.2.0-preview.30-Setup.exe` 与便携 zip，体积和 SHA-256 见 `dist/releases/release.json`；公开 CI 状态见 [GitHub Actions](https://github.com/creDreams/math-renderer-codex-claude-code/actions/workflows/verify.yml)，下载见 [Releases](https://github.com/creDreams/math-renderer-codex-claude-code/releases)。
 
 最终 .30 的 25 个构建文件逐项哈希核对后替换默认目录，宿主和 worker 就绪，总开关与行内预览开启，设置文件字节与测试前完全相同。对用户现有 Claude GSPO 会话做五次可见位置检查，独立按完整可见原文计数，期望/实际依次为 7/7、8/8、7/7、8/8、7/7；每次均等待本次捕获对应的新显示时间，统一颜色 `#cccccc`。截图目视确认序列概率、推导续行、梯度、`sg[...]`、复合下标和 `GSPO-token` 脚标，普通说明、表格及输入框保留。检查结束恢复原标签页、前台和鼠标，滚轮位移合计为零；没有重启用户 agent 或发送消息。私有截图、原始回答与诊断保留在忽略目录。
 

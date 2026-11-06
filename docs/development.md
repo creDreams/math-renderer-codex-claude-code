@@ -75,7 +75,7 @@ Tabby 的 `frontend.xterm` 和 `.xterm-screen` DOM 是隔离在适配层中的�
 
 `npm run dev:tabby` 使用本项目 portable 宿主，提供本机 CDP 9223 和 `__agentMath` 诊断接口。实际会话测试前，在宿主内照常运行 Codex，得到一个完整的 `\[...\]` 回答。`npm run test:tabby` 检查注册的插件、detach/attach、缓冲区不变、真实自动匹配、宿主右键菜单开关，然后生成忽略的报告/截图。它不向终端写入测试内容，也不自动发起模型请求。
 
-`npm run test:browser` 使用独立双终端接收完全相同的数据，比较全部单元格字符、宽度、颜色模式与样式、光标、缓冲区和滚动位置。输出截图与性能数据在 `test-results/`。当前 P95 扫描/匹配预算为 25 ms，冷 SVG 排版预算为 100 ms；慢速 CI 可显式设置 `AMT_PERF_BUDGET_MS`，所附 Windows CI 配置为 50 ms。远程执行结果见 [GitHub Actions](https://github.com/creDreams/terminal-math-renderer/actions/workflows/verify.yml)。这些是固定样本下的回归门槛，不是全部硬件的交互延迟承诺。
+`npm run test:browser` 使用独立双终端接收完全相同的数据，比较全部单元格字符、宽度、颜色模式与样式、光标、缓冲区和滚动位置。输出截图与性能数据在 `test-results/`。当前 P95 扫描/匹配预算为 25 ms，冷 SVG 排版预算为 100 ms；慢速 CI 可显式设置 `AMT_PERF_BUDGET_MS`，所附 Windows CI 配置为 50 ms。远程执行结果见 [GitHub Actions](https://github.com/creDreams/math-renderer-codex-claude-code/actions/workflows/verify.yml)。这些是固定样本下的回归门槛，不是全部硬件的交互延迟承诺。
 
 普通启动器 `npm run start:tabby` 不开放调试端口。关闭终端标签页时，插件清理定时器、ResizeObserver、事件订阅与 DOM；PTY 和 Codex 进程的退出仍由 Tabby 管理。
 
@@ -85,4 +85,4 @@ Tabby 的 `frontend.xterm` 和 `.xterm-screen` DOM 是隔离在适配层中的�
 
 安装时曾收到 MathJax 开发依赖链的 5 项 moderate audit 报告；最后一次 registry audit 因 TLS 连接中断未能完成，不能声明全量依赖无告警。构建的 esbuild 输入清单确认 `mj-context-menu`、`rimraf`、`glob`、`minimatch`、`speech-rule-engine` 与 `mhchemparser` 均未进入运行包，并对此设置构建断言。后续联网时可重新运行 `npm audit`，不使用破坏性升级来隐藏报告。
 
-公开仓库为 [creDreams/terminal-math-renderer](https://github.com/creDreams/terminal-math-renderer)。发布文件放在 GitHub Releases，源码仓库排除构建、缓存和私人数据；文档图片仅允许经过核对的两张使用前后对比图。
+公开仓库为 [creDreams/math-renderer-codex-claude-code](https://github.com/creDreams/math-renderer-codex-claude-code)。发布文件放在 GitHub Releases，源码仓库排除构建、缓存和私人数据；文档图片仅允许经过核对的两张使用前后对比图。
