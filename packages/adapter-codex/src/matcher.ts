@@ -3,7 +3,7 @@ import type { ScreenSnapshot, CellLocation } from '../../xterm-addon/src/snapsho
 import type { FormulaRegion } from '../../xterm-addon/src/overlay.js';
 import { assistantTextMatches, assistantTextProof, expandCompactRanges, inlineScriptPresentationKeys } from './inline-math.js';
 import { findInlineMath } from '../../core/src/implicit-math.js';
-import { plainMarkdown } from './markdown-presentation.js';
+import { markdownPresentations } from './markdown-presentation.js';
 import { findCodeRanges } from '../../core/src/markdown-code.js';
 import { displayMatches } from './display-presentation.js';
 import { nativeDisplayKey } from './native-display.js';
@@ -303,10 +303,8 @@ function verifiedInline(message: string, form: string, screen: AssistantRegion, 
   });
 }
 
-function verifiedFormulas(message: string, screen: AssistantRegion, heading?: string, allowClipped = false, leadingContext = '', inlineMath = false) {
-  const source = plainMarkdown(message);
-  const links = plainMarkdown(message, { linkLabels: true });
-  const forms = new Set([message, source, renderedLists(source), links, renderedLists(links)]);
+function verifiedFormulas(message: string, screen: AssistantRegion, cwd: string, heading?: string, allowClipped = false, leadingContext = '', inlineMath = false) {
+  const forms = new Set([message, ...markdownPresentations(message, cwd).flatMap(form => [form, renderedLists(form)])]);
   // Prefer a complete proof in any known presentation before accepting a
   // clipped fallback. A table tail alone must not discard offscreen evidence
   // that also maps the native blocks farther down the same viewport.
@@ -340,7 +338,7 @@ export function matchCodex(snapshot: ScreenSnapshot, sessions: CodexSession[], o
       if (screenText.length + (screen.clippedStart ? compact(continuation?.prefix ?? '').length : 0) < 24) continue;
       let verified: ReturnType<typeof verifiedFormulas>;
       for (const message of session.assistant) {
-        verified = verifiedFormulas(message, screen, heading, options.allowClipped, continuation?.prefix, options.inlineMath);
+        verified = verifiedFormulas(message, screen, session.cwd, heading, options.allowClipped, continuation?.prefix, options.inlineMath);
         if (verified) break;
       }
       if (!verified) continue;

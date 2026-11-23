@@ -9,7 +9,9 @@ import { fileURLToPath } from 'node:url';
 process.chdir(fileURLToPath(new URL('../', import.meta.url)));
 const exec = promisify(execFile), run = Date.now().toString(36), observe = process.argv.includes('--observe');
 const compact = process.argv.includes('--compact'), native = process.argv.includes('--native') || compact;
-const reportName = 'windows-redraw' + (compact ? '-compact' : native ? '-native' : '') + (observe ? '-baseline' : '');
+const mixed = process.argv.includes('--mixed-markdown');
+if (mixed && native) throw new Error('Run --mixed-markdown separately from --native or --compact');
+const reportName = 'windows-redraw' + (mixed ? '-mixed' : compact ? '-compact' : native ? '-native' : '') + (observe ? '-baseline' : '');
 const work = path.resolve('.cache/redraw-' + run), profile = path.join(work, 'profile'), home = path.join(work, 'codex');
 const title = 'AgentMathResearch-Redraw-' + run, control = path.join(work, 'control.txt'), input = path.join(work, 'input.json');
 const binaryArgument = process.argv.indexOf('--binary');
@@ -24,9 +26,10 @@ const seedTex = compact ? String.raw`\{x_{i,1},x_{i,2},x_{i,3},x_{i,4}\}.` :
   native ? String.raw`\boxed{\hat A_{i,t}=A_i^{E}+\omega A_{i,t}^{S}}` : String.raw`\mathbb E_q[Q]-\eta\mathrm{KL}(q\|p)`;
 const seedBlock = '\\[\n' + seedTex + '\n\\]';
 const compactShown = '{x_{i,1},x_{i,2},x_{i,3},x_{i,4}}.';
-const seed = compact ? `同一提示采样四条输出，列出样本 ${run}。\n\n${seedBlock}\n\n随后计算四个奖励的均值、标准差和相对优势。` :
+const seed = mixed ? `**Verified historical policy derivation ${run}.**\n\n### Retained heading\n\n${seedBlock}\nThe original objective remains unchanged. [Local reference](D:/fixture/notes/policy.pdf)` :
+  compact ? `同一提示采样四条输出，列出样本 ${run}。\n\n${seedBlock}\n\n随后计算四个奖励的均值、标准差和相对优势。` :
   `Verified historical policy derivation ${run}.\n${seedBlock}\nThe original objective remains unchanged.`;
-const seedVisible = compact ? seed.replace(seedBlock, compactShown) :
+const seedVisible = mixed ? `Verified historical policy derivation ${run}.\n\n### Retained heading\n\n${seedBlock}\nThe original objective remains unchanged. Local reference (notes/policy.pdf)` : compact ? seed.replace(seedBlock, compactShown) :
   native ? seed.replace(seedBlock, '┌──────────────────────────────┐\n│ Â_{i,t}=Aᵢ^{E}+ω A_{i,t}^{S} │\n└──────────────────────────────┘') : seed;
 const next = `A new streaming assistant answer ${run}.\n\\[\na^2+b^2=c^2\n\\]\nExplanation: `;
 const prose = Array.from({ length: 45 }, (_, i) => String.fromCharCode(97 + i % 26));

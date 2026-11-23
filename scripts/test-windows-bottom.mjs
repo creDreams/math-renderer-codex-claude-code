@@ -131,7 +131,7 @@ await mkdir(path.join(home, 'sessions'), { recursive: true }); await mkdir(profi
 if (process.argv.includes('--preview')) await writeFile(path.join(profile, 'settings.json'), JSON.stringify({ enabled: true, inlineMath: true }));
 await mkdir('test-results', { recursive: true });
 const sessionFile = path.join(home, 'sessions/rollout-bottom.jsonl');
-await writeFile(sessionFile, JSON.stringify({ type: 'session_meta', payload: { id: 'bottom-' + run, cwd: 'D:/fixture' } }) + '\n');
+await writeFile(sessionFile, JSON.stringify({ type: 'session_meta', payload: { id: 'bottom-' + run, cwd: supplied?.cwd ?? 'D:/fixture' } }) + '\n');
 await writeFile(input, JSON.stringify({ waiting: 'Preparing independent math fixture\r\n', normal: 'earlier scrollback\r\n'.repeat(80) + body,
   history: 'later scrollback filler\r\n'.repeat(60), appendPhases: ['history'] }));
 await writeFile(control, 'waiting');
