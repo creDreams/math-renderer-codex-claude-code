@@ -6,7 +6,7 @@
 
 Keep your existing terminal and run `codex` or `claude` as usual. This Windows add-on detects supported formulas in assistant replies and renders them in place. Select a formula to reveal and copy its original source; clear the selection to restore rendering.
 
-Current version: **0.2.0-preview.32** · **Windows x64** · [MIT](LICENSE).
+Current version: **0.2.0-preview.33** · **Windows x64** · [MIT](LICENSE).
 
 ## Before and after
 
@@ -22,13 +22,13 @@ These are real Windows Terminal captures of synthetic Codex-style and Claude-sty
 
 ## Install and use
 
-1. Download the [Windows x64 installer](https://github.com/creDreams/math-renderer-codex-claude-code/releases/download/v0.2.0-preview.32/AgentMath-0.2.0-preview.32-Setup.exe) and install **Agent Math**, the companion application. A [portable ZIP](https://github.com/creDreams/math-renderer-codex-claude-code/releases/download/v0.2.0-preview.32/AgentMath-0.2.0-preview.32-windows-x64.zip) is also available: extract it completely and run `AgentMath.exe`.
+1. Download the [Windows x64 installer](https://github.com/creDreams/math-renderer-codex-claude-code/releases/download/v0.2.0-preview.33/AgentMath-0.2.0-preview.33-Setup.exe) and install **Agent Math**, the companion application. A [portable ZIP](https://github.com/creDreams/math-renderer-codex-claude-code/releases/download/v0.2.0-preview.33/AgentMath-0.2.0-preview.33-windows-x64.zip) is also available: extract it completely and run `AgentMath.exe`.
 2. Start Agent Math, then use Codex or Claude Code in Windows Terminal as usual. For Claude mathematical code blocks and optional Codex inline formulas, enable **Inline and unmarked math (preview)** (`行内与无标记公式（预览）`) in the system tray menu. This option is off by default.
 3. Keep the complete formula visible. Rendering starts after its assistant source is available locally. Drag-select a formula to expose the source, or pause the add-on from the tray to see all original text.
 
 No Node.js, npm, browser, Tabby, or separate LaTeX installation is needed for the packaged application. Existing agent sessions can continue. Closing the status window leaves the application running in the tray; choose **Exit** there to stop it.
 
-[All releases](https://github.com/creDreams/math-renderer-codex-claude-code/releases) · [SHA-256 checksums](https://github.com/creDreams/math-renderer-codex-claude-code/releases/download/v0.2.0-preview.32/SHA256SUMS.txt). The current preview is unsigned.
+[All releases](https://github.com/creDreams/math-renderer-codex-claude-code/releases) · [SHA-256 checksums](https://github.com/creDreams/math-renderer-codex-claude-code/releases/download/v0.2.0-preview.33/SHA256SUMS.txt). The current preview is unsigned.
 
 ## What it supports
 
